@@ -1,8 +1,8 @@
 import * as Stats from 'stats.js';
 import * as THREE from 'three';
-import { Clock, Material, Mesh, PCFShadowMap, PerspectiveCamera, PlaneGeometry, PointLight, RepeatWrapping, SphereGeometry, TextureLoader, Vector3, WebGLRenderer } from 'three';
+import { Clock, Material, Mesh, PCFShadowMap, PerspectiveCamera, PlaneGeometry, PointLight, RepeatWrapping, SphereGeometry, TextureLoader, Vector3, WebGLRenderer, MeshStandardMaterial } from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { NodeShaderMaterial } from '../../src/index';
+import { NodeShaderMaterial, varyingAttributes } from '../../src/index';
 import { float, rgb, textureSampler2d, uniformFloat } from '../../src/lib/dsl';
 import { colorToNormal } from '../../src/lib/effects/normal-mapping';
 import { standardMaterial } from '../../src/lib/effects/physical';
@@ -19,6 +19,10 @@ export function init() {
   const bricksTextureNormal = new TextureLoader().load('./assets/textures/bricks/Bricks075A_1K_NormalGL.png')
   bricksTextureNormal.wrapS = RepeatWrapping
   bricksTextureNormal.wrapT = RepeatWrapping
+
+  const bricksTextureRoughness = new TextureLoader().load('./assets/textures/bricks/Bricks075A_1K_Roughness.png')
+  bricksTextureRoughness.wrapS = RepeatWrapping
+  bricksTextureRoughness.wrapT = RepeatWrapping
 
   var stats = new Stats();
   stats.showPanel(0); // 0: fps, 1: ms, 2: mb, 3+: custom
@@ -86,11 +90,19 @@ export function init() {
 
   const normal = colorToNormal(normalSample, 0.7)
 
-  let material = new NodeShaderMaterial({
-    color: standardMaterial({ color, normal }),
-    transform: oscilate(uniformTime)
+  let material: Material = new NodeShaderMaterial({
+    //color: standardMaterial({ color, normal }),
+    color: standardMaterial({
+      color: sampler.sample(varyingAttributes.uv).rgb(),
+      normal: colorToNormal(normalSampler.sample(varyingAttributes.uv), 0.9)
+    })
+    //transform: oscilate(uniformTime)
   })
+  material = new MeshStandardMaterial({ map: bricksTexture, normalMap: bricksTextureNormal, roughness: 0.2, metalness: 0 })
 
+  material.onBeforeCompile = (s) => {
+    console.log(s.fragmentShader)
+  }
   // If the attributes.tangent is used, tangents have to be manually computed on the geometry. 
   sphere.computeTangents()
 
@@ -134,7 +146,7 @@ export function init() {
 
   function render() {
     stats.begin()
-    material.uniforms.time.value = clock.getElapsedTime()
+    //material.uniforms.time.value = clock.getElapsedTime()
 
     renderer.render(scene, camera)
     stats.end()

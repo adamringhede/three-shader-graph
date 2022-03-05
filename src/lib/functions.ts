@@ -184,6 +184,42 @@ export function abs<T extends FloatNode | Vec2Node | Vec3Node | Vec4Node>(
   return unaryFunction('abs', x);
 }
 
+export function dFdx<T extends FloatNode | Vec2Node | Vec3Node | Vec4Node>(
+  x: T
+): T {
+  return unaryFunction('dFdx', x);
+}
+
+export function dFdy<T extends FloatNode | Vec2Node | Vec3Node | Vec4Node>(
+  x: T
+): T {
+  return unaryFunction('dFdy', x);
+}
+
+export function dFdxCoarse<T extends FloatNode | Vec2Node | Vec3Node | Vec4Node>(
+  x: T
+): T {
+  return unaryFunction('dFdxCoarse', x);
+}
+
+export function dFdyCoarse<T extends FloatNode | Vec2Node | Vec3Node | Vec4Node>(
+  x: T
+): T {
+  return unaryFunction('dFdyCoarse', x);
+}
+
+export function dFdxFine<T extends FloatNode | Vec2Node | Vec3Node | Vec4Node>(
+  x: T
+): T {
+  return unaryFunction('dFdxFine', x);
+}
+
+export function dFdyFine<T extends FloatNode | Vec2Node | Vec3Node | Vec4Node>(
+  x: T
+): T {
+  return unaryFunction('dFdyFine', x);
+}
+
 export function sign<T extends FloatNode | Vec2Node | Vec3Node | Vec4Node>(
   x: T
 ): T {
@@ -271,6 +307,20 @@ export function pow<T extends FloatNode | Vec2Node | Vec3Node | Vec4Node>(
   return anyArgsFunction(Object.getPrototypeOf(x).constructor, 'pow', x, y);
 }
 
+export function max<T extends FloatNode | Vec2Node | Vec3Node | Vec4Node>(
+  x: T,
+  y: T
+): T {
+  return anyArgsFunction(Object.getPrototypeOf(x).constructor, 'max', x, y);
+}
+
+export function min<T extends FloatNode | Vec2Node | Vec3Node | Vec4Node>(
+  x: T,
+  y: T
+): FloatNode {
+  return anyArgsFunction(Object.getPrototypeOf(x).constructor, 'min', x, y);
+}
+
 export function dot<T extends FloatNode | Vec2Node | Vec3Node | Vec4Node>(
   x: T,
   y: T
@@ -290,3 +340,4 @@ export function saturate<T extends FloatNode | Vec2Node | Vec3Node | Vec4Node>(
 ): T {
   return clamp(a, float(0), float(1));
 }
+
